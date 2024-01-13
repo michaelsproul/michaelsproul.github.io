@@ -5385,32 +5385,9 @@ var $author$project$Warband$Warband = F3(
 	function (name, treasury, units) {
 		return {name: name, treasury: treasury, units: units};
 	});
-var $author$project$Warband$Treasury = F2(
-	function (gold, wyrdstone) {
-		return {gold: gold, wyrdstone: wyrdstone};
-	});
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
-	function (key, valDecoder, decoder) {
-		return A2(
-			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
-			A2($elm$json$Json$Decode$field, key, valDecoder),
-			decoder);
-	});
-var $author$project$Warband$decodeTreasury = A3(
-	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'wyrdstone',
-	$elm$json$Json$Decode$int,
-	A3(
-		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'gold',
-		$elm$json$Json$Decode$int,
-		$elm$json$Json$Decode$succeed($author$project$Warband$Treasury)));
-var $author$project$Warband$Unit = F5(
-	function (count, name, xp, profile, equipment) {
-		return {count: count, equipment: equipment, name: name, profile: profile, xp: xp};
+var $author$project$Warband$Treasury = F3(
+	function (gold, wyrdstone, equipment) {
+		return {equipment: equipment, gold: gold, wyrdstone: wyrdstone};
 	});
 var $author$project$Warband$EquipmentWeapon = function (a) {
 	return {$: 'EquipmentWeapon', a: a};
@@ -5482,6 +5459,7 @@ var $author$project$Warband$decodeWeaponKind = $elm$json$Json$Decode$oneOf(
 			A2($author$project$Warband$decodeLiteralAsValue, 'ballistic', $author$project$Warband$Ballistic),
 			$elm$json$Json$Decode$string)
 		]));
+var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -5490,6 +5468,8 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
 			]));
 };
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
@@ -5545,29 +5525,61 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional = F4(
 				fallback),
 			decoder);
 	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A2($elm$json$Json$Decode$field, key, valDecoder),
+			decoder);
+	});
 var $author$project$Warband$decodeEquipment = A4(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
-	'rend',
-	$elm$json$Json$Decode$maybe($author$project$Warband$decodeModifier),
+	'specialRules',
+	$elm$json$Json$Decode$maybe(
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)),
 	$elm$core$Maybe$Nothing,
-	A3(
-		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'strength',
-		$author$project$Warband$decodeModifier,
+	A4(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+		'rend',
+		$elm$json$Json$Decode$maybe($author$project$Warband$decodeModifier),
+		$elm$core$Maybe$Nothing,
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'kind',
-			$author$project$Warband$decodeWeaponKind,
+			'strength',
+			$author$project$Warband$decodeModifier,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'name',
-				$elm$json$Json$Decode$string,
-				$elm$json$Json$Decode$succeed(
-					F4(
-						function (name, kind, strength, rend) {
-							return $author$project$Warband$EquipmentWeapon(
-								{kind: kind, name: name, rend: rend, strength: strength});
-						}))))));
+				'kind',
+				$author$project$Warband$decodeWeaponKind,
+				A3(
+					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+					'name',
+					$elm$json$Json$Decode$string,
+					$elm$json$Json$Decode$succeed(
+						F5(
+							function (name, kind, strength, rend, specialRules) {
+								return $author$project$Warband$EquipmentWeapon(
+									{kind: kind, name: name, rend: rend, specialRules: specialRules, strength: strength});
+							})))))));
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Warband$decodeTreasury = A4(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+	'equipment',
+	$elm$json$Json$Decode$list($author$project$Warband$decodeEquipment),
+	_List_Nil,
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'wyrdstone',
+		$elm$json$Json$Decode$int,
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'gold',
+			$elm$json$Json$Decode$int,
+			$elm$json$Json$Decode$succeed($author$project$Warband$Treasury))));
+var $author$project$Warband$Unit = F5(
+	function (count, name, xp, profile, equipment) {
+		return {count: count, equipment: equipment, name: name, profile: profile, xp: xp};
+	});
 var $author$project$Warband$Profile = function (name) {
 	return function (kind) {
 		return function (movement) {
@@ -5579,7 +5591,9 @@ var $author$project$Warband$Profile = function (name) {
 								return function (initiative) {
 									return function (attacks) {
 										return function (leadership) {
-											return {attacks: attacks, ballisticSkill: ballisticSkill, initiative: initiative, kind: kind, leadership: leadership, movement: movement, name: name, strength: strength, toughness: toughness, weaponSkill: weaponSkill, wounds: wounds};
+											return function (specialRules) {
+												return {attacks: attacks, ballisticSkill: ballisticSkill, initiative: initiative, kind: kind, leadership: leadership, movement: movement, name: name, specialRules: specialRules, strength: strength, toughness: toughness, weaponSkill: weaponSkill, wounds: wounds};
+											};
 										};
 									};
 								};
@@ -5605,52 +5619,57 @@ var $author$project$Warband$decodeUnitKind = $elm$json$Json$Decode$oneOf(
 			A2($author$project$Warband$decodeLiteralAsValue, 'henchman', $author$project$Warband$Henchman),
 			$elm$json$Json$Decode$string)
 		]));
-var $author$project$Warband$decodeProfile = A3(
-	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'leadership',
-	$elm$json$Json$Decode$int,
+var $author$project$Warband$decodeProfile = A4(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+	'specialRules',
+	$elm$json$Json$Decode$maybe(
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)),
+	$elm$core$Maybe$Nothing,
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'attacks',
+		'leadership',
 		$elm$json$Json$Decode$int,
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'initiative',
+			'attacks',
 			$elm$json$Json$Decode$int,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'wounds',
+				'initiative',
 				$elm$json$Json$Decode$int,
 				A3(
 					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'toughness',
+					'wounds',
 					$elm$json$Json$Decode$int,
 					A3(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'strength',
+						'toughness',
 						$elm$json$Json$Decode$int,
 						A3(
 							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-							'ballisticSkill',
+							'strength',
 							$elm$json$Json$Decode$int,
 							A3(
 								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-								'weaponSkill',
+								'ballisticSkill',
 								$elm$json$Json$Decode$int,
 								A3(
 									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-									'movement',
+									'weaponSkill',
 									$elm$json$Json$Decode$int,
 									A3(
 										$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-										'kind',
-										$author$project$Warband$decodeUnitKind,
+										'movement',
+										$elm$json$Json$Decode$int,
 										A3(
 											$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-											'name',
-											$elm$json$Json$Decode$string,
-											$elm$json$Json$Decode$succeed($author$project$Warband$Profile))))))))))));
-var $elm$json$Json$Decode$list = _Json_decodeList;
+											'kind',
+											$author$project$Warband$decodeUnitKind,
+											A3(
+												$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+												'name',
+												$elm$json$Json$Decode$string,
+												$elm$json$Json$Decode$succeed($author$project$Warband$Profile)))))))))))));
 var $author$project$Warband$decodeUnit = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 	'equipment',
@@ -5685,6 +5704,192 @@ var $author$project$Warband$decodeWarband = A3(
 			'name',
 			$elm$json$Json$Decode$string,
 			$elm$json$Json$Decode$succeed($author$project$Warband$Warband))));
+var $author$project$Warband$encodeMaybeField = F3(
+	function (name, m, enc) {
+		if (m.$ === 'Just') {
+			var v = m.a;
+			return _List_fromArray(
+				[
+					_Utils_Tuple2(
+					name,
+					enc(v))
+				]);
+		} else {
+			return _List_Nil;
+		}
+	});
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Warband$encodeModifier = function (modifier) {
+	if (modifier.$ === 'ModifierAbs') {
+		var n = modifier.a;
+		return $elm$json$Json$Encode$string(
+			'abs' + $elm$core$String$fromInt(n));
+	} else {
+		var n = modifier.a;
+		return $elm$json$Json$Encode$string(
+			'mod' + $elm$core$String$fromInt(n));
+	}
+};
+var $author$project$Warband$encodeWeaponKind = function (kind) {
+	if (kind.$ === 'Melee') {
+		return $elm$json$Json$Encode$string('melee');
+	} else {
+		return $elm$json$Json$Encode$string('ballistic');
+	}
+};
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$Warband$encodeWeapon = function (weapon) {
+	return $elm$json$Json$Encode$object(
+		_Utils_ap(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'name',
+					$elm$json$Json$Encode$string(weapon.name)),
+					_Utils_Tuple2(
+					'kind',
+					$author$project$Warband$encodeWeaponKind(weapon.kind)),
+					_Utils_Tuple2(
+					'strength',
+					$author$project$Warband$encodeModifier(weapon.strength))
+				]),
+			_Utils_ap(
+				A3($author$project$Warband$encodeMaybeField, 'rend', weapon.rend, $author$project$Warband$encodeModifier),
+				A3(
+					$author$project$Warband$encodeMaybeField,
+					'specialRules',
+					weapon.specialRules,
+					$elm$json$Json$Encode$list($elm$json$Json$Encode$string)))));
+};
+var $author$project$Warband$encodeEquipment = function (equipment) {
+	var w = equipment.a;
+	return $author$project$Warband$encodeWeapon(w);
+};
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$Warband$encodeTreasury = function (t) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'gold',
+				$elm$json$Json$Encode$int(t.gold)),
+				_Utils_Tuple2(
+				'wyrdstone',
+				$elm$json$Json$Encode$int(t.wyrdstone)),
+				_Utils_Tuple2(
+				'equipment',
+				A2($elm$json$Json$Encode$list, $author$project$Warband$encodeEquipment, t.equipment))
+			]));
+};
+var $author$project$Warband$encodeUnitKind = function (kind) {
+	if (kind.$ === 'Hero') {
+		return $elm$json$Json$Encode$string('hero');
+	} else {
+		return $elm$json$Json$Encode$string('henchman');
+	}
+};
+var $author$project$Warband$encodeProfile = function (profile) {
+	return $elm$json$Json$Encode$object(
+		_Utils_ap(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'name',
+					$elm$json$Json$Encode$string(profile.name)),
+					_Utils_Tuple2(
+					'kind',
+					$author$project$Warband$encodeUnitKind(profile.kind)),
+					_Utils_Tuple2(
+					'movement',
+					$elm$json$Json$Encode$int(profile.movement)),
+					_Utils_Tuple2(
+					'weaponSkill',
+					$elm$json$Json$Encode$int(profile.weaponSkill)),
+					_Utils_Tuple2(
+					'ballisticSkill',
+					$elm$json$Json$Encode$int(profile.ballisticSkill)),
+					_Utils_Tuple2(
+					'strength',
+					$elm$json$Json$Encode$int(profile.strength)),
+					_Utils_Tuple2(
+					'toughness',
+					$elm$json$Json$Encode$int(profile.toughness)),
+					_Utils_Tuple2(
+					'wounds',
+					$elm$json$Json$Encode$int(profile.wounds)),
+					_Utils_Tuple2(
+					'initiative',
+					$elm$json$Json$Encode$int(profile.initiative)),
+					_Utils_Tuple2(
+					'attacks',
+					$elm$json$Json$Encode$int(profile.attacks)),
+					_Utils_Tuple2(
+					'leadership',
+					$elm$json$Json$Encode$int(profile.leadership))
+				]),
+			A3(
+				$author$project$Warband$encodeMaybeField,
+				'specialRules',
+				profile.specialRules,
+				$elm$json$Json$Encode$list($elm$json$Json$Encode$string))));
+};
+var $author$project$Warband$encodeUnit = function (unit) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'count',
+				$elm$json$Json$Encode$int(unit.count)),
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(unit.name)),
+				_Utils_Tuple2(
+				'xp',
+				$elm$json$Json$Encode$int(unit.xp)),
+				_Utils_Tuple2(
+				'profile',
+				$author$project$Warband$encodeProfile(unit.profile)),
+				_Utils_Tuple2(
+				'equipment',
+				A2($elm$json$Json$Encode$list, $author$project$Warband$encodeEquipment, unit.equipment))
+			]));
+};
+var $author$project$Warband$encodeWarband = function (warband) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(warband.name)),
+				_Utils_Tuple2(
+				'treasury',
+				$author$project$Warband$encodeTreasury(warband.treasury)),
+				_Utils_Tuple2(
+				'units',
+				A2($elm$json$Json$Encode$list, $author$project$Warband$encodeUnit, warband.units))
+			]));
+};
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -5769,6 +5974,13 @@ var $author$project$Main$runDecoder = F2(
 		return $author$project$Main$resultToTask(
 			A2($elm$json$Json$Decode$decodeString, decoder, value));
 	});
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
 var $elm$file$File$toString = _File_toString;
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5843,6 +6055,21 @@ var $author$project$Main$update = F2(
 						model,
 						{enemyWarband: warband}),
 					$elm$core$Platform$Cmd$none);
+			case 'DownloadWarband':
+				var _v1 = model.warband;
+				if (_v1.$ === 'Just') {
+					var w = _v1.a;
+					var indent = 2;
+					var jsonString = A2(
+						$elm$json$Json$Encode$encode,
+						indent,
+						$author$project$Warband$encodeWarband(w));
+					return _Utils_Tuple2(
+						model,
+						A3($elm$file$File$Download$string, 'warband.json', 'application/json', jsonString));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			case 'ChangePage':
 				var page = msg.a;
 				return _Utils_Tuple2(
@@ -5850,7 +6077,7 @@ var $author$project$Main$update = F2(
 						model,
 						{page: page}),
 					$elm$core$Platform$Cmd$none);
-			case 'EditWarband':
+			case 'EditUnit':
 				var idx = msg.a;
 				var f = msg.b;
 				var newWarband = A2(
@@ -5873,6 +6100,14 @@ var $author$project$Main$update = F2(
 						model,
 						{warband: newWarband}),
 					$elm$core$Platform$Cmd$none);
+			case 'EditWarband':
+				var f = msg.a;
+				var newWarband = A2($elm$core$Maybe$map, f, model.warband);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{warband: newWarband}),
+					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
@@ -5885,7 +6120,6 @@ var $author$project$Main$ChangePage = function (a) {
 };
 var $author$project$Main$GenericRules = {$: 'GenericRules'};
 var $author$project$Main$Matchups = {$: 'Matchups'};
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6792,6 +7026,7 @@ var $author$project$Warband$defaultWeapon = {
 	kind: $author$project$Warband$Melee,
 	name: 'Unarmed strike',
 	rend: $elm$core$Maybe$Nothing,
+	specialRules: $elm$core$Maybe$Nothing,
 	strength: $author$project$Warband$ModifierMod(0)
 };
 var $author$project$Main$diceRoll = function (maybeN) {
@@ -7172,6 +7407,66 @@ var $author$project$Main$viewMatchups = function (model) {
 				_List_fromArray(
 					[$author$project$Main$viewFooter]))));
 };
+var $author$project$Main$DownloadWarband = {$: 'DownloadWarband'};
+var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $author$project$Main$headerCell = F2(
+	function (label, content) {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(label + ': '),
+					content
+				]));
+	});
+var $bChiquet$elm_accessors$Accessors$Internal$Relation = function (a) {
+	return {$: 'Relation', a: a};
+};
+var $bChiquet$elm_accessors$Accessors$makeOneToOne = F3(
+	function (getter, mapper, _v0) {
+		var sub = _v0.a;
+		return $bChiquet$elm_accessors$Accessors$Internal$Relation(
+			{
+				get: function (_super) {
+					return sub.get(
+						getter(_super));
+				},
+				over: F2(
+					function (change, _super) {
+						return A2(
+							mapper,
+							sub.over(change),
+							_super);
+					})
+			});
+	});
+var $author$project$Lenses$treasuryGold = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.gold;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					gold: change(record.gold)
+				});
+		}));
+var $author$project$Lenses$treasuryWyrdstone = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.wyrdstone;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					wyrdstone: change(record.wyrdstone)
+				});
+		}));
 var $elm$html$Html$Attributes$colspan = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -7179,13 +7474,10 @@ var $elm$html$Html$Attributes$colspan = function (n) {
 		$elm$core$String$fromInt(n));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $author$project$Main$EditWarband = F2(
+var $author$project$Main$EditUnit = F2(
 	function (a, b) {
-		return {$: 'EditWarband', a: a, b: b};
+		return {$: 'EditUnit', a: a, b: b};
 	});
-var $bChiquet$elm_accessors$Accessors$Internal$Relation = function (a) {
-	return {$: 'Relation', a: a};
-};
 var $bChiquet$elm_accessors$Accessors$Internal$id = $bChiquet$elm_accessors$Accessors$Internal$Relation(
 	{
 		get: function (a) {
@@ -7214,32 +7506,146 @@ var $author$project$Main$intEdit = F3(
 		if (_v0.$ === 'Just') {
 			var value = _v0.a;
 			return A2(
-				$author$project$Main$EditWarband,
+				$author$project$Main$EditUnit,
 				idx,
-				A2($bChiquet$elm_accessors$Accessors$set, accessor, value));
+				function (unit) {
+					return A3($bChiquet$elm_accessors$Accessors$set, accessor, value, unit);
+				});
 		} else {
 			return A2($elm$core$Debug$log, 'invalid input, not an integer', $author$project$Main$Noop);
 		}
 	});
-var $bChiquet$elm_accessors$Accessors$makeOneToOne = F3(
-	function (getter, mapper, _v0) {
-		var sub = _v0.a;
-		return $bChiquet$elm_accessors$Accessors$Internal$Relation(
-			{
-				get: function (_super) {
-					return sub.get(
-						getter(_super));
-				},
-				over: F2(
-					function (change, _super) {
-						return A2(
-							mapper,
-							sub.over(change),
-							_super);
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Main$intInput = F3(
+	function (initialValue, idx, accessor) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$value(
+					$elm$core$String$fromInt(initialValue)),
+					$elm$html$Html$Events$onInput(
+					function (string) {
+						return A3($author$project$Main$intEdit, idx, accessor, string);
 					})
+				]),
+			_List_Nil);
+	});
+var $author$project$Main$stringEdit = F3(
+	function (idx, accessor, value) {
+		return A2(
+			$author$project$Main$EditUnit,
+			idx,
+			function (unit) {
+				return A3($bChiquet$elm_accessors$Accessors$set, accessor, value, unit);
 			});
 	});
-var $author$project$Lenses$movement = A2(
+var $author$project$Main$stringInput = F3(
+	function (initialValue, idx, accessor) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$value(initialValue),
+					$elm$html$Html$Events$onInput(
+					function (string) {
+						return A3($author$project$Main$stringEdit, idx, accessor, string);
+					})
+				]),
+			_List_Nil);
+	});
+var $author$project$Lenses$unitCount = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.count;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					count: change(record.count)
+				});
+		}));
+var $author$project$Lenses$unitName = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.name;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					name: change(record.name)
+				});
+		}));
+var $author$project$Lenses$unitXp = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.xp;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					xp: change(record.xp)
+				});
+		}));
+var $author$project$Lenses$profileAttacks = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.attacks;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					attacks: change(record.attacks)
+				});
+		}));
+var $author$project$Lenses$profileBallisticSkill = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.ballisticSkill;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					ballisticSkill: change(record.ballisticSkill)
+				});
+		}));
+var $author$project$Lenses$profileInitiative = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.initiative;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					initiative: change(record.initiative)
+				});
+		}));
+var $author$project$Lenses$profileLeadership = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.leadership;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					leadership: change(record.leadership)
+				});
+		}));
+var $author$project$Lenses$profileMovement = A2(
 	$bChiquet$elm_accessors$Accessors$makeOneToOne,
 	function ($) {
 		return $.movement;
@@ -7250,6 +7656,58 @@ var $author$project$Lenses$movement = A2(
 				record,
 				{
 					movement: change(record.movement)
+				});
+		}));
+var $author$project$Lenses$profileStrength = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.strength;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					strength: change(record.strength)
+				});
+		}));
+var $author$project$Lenses$profileToughness = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.toughness;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					toughness: change(record.toughness)
+				});
+		}));
+var $author$project$Lenses$profileWeaponSkill = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.weaponSkill;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					weaponSkill: change(record.weaponSkill)
+				});
+		}));
+var $author$project$Lenses$profileWounds = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.wounds;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					wounds: change(record.wounds)
 				});
 		}));
 var $author$project$Lenses$unitProfile = A2(
@@ -7265,7 +7723,6 @@ var $author$project$Lenses$unitProfile = A2(
 					profile: change(record.profile)
 				});
 		}));
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$viewProfile = F2(
 	function (idx, profile) {
 		var header = function (t) {
@@ -7277,16 +7734,20 @@ var $author$project$Main$viewProfile = F2(
 						$elm$html$Html$text(t)
 					]));
 		};
-		var body = function (x) {
-			return A2(
-				$elm$html$Html$td,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(x))
-					]));
-		};
+		var cell = F2(
+			function (initialValue, accessor) {
+				return A2(
+					$elm$html$Html$td,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A3(
+							$author$project$Main$intInput,
+							initialValue,
+							idx,
+							A2($elm$core$Basics$composeL, $author$project$Lenses$unitProfile, accessor))
+						]));
+			});
 		return _List_fromArray(
 			[
 				A2(
@@ -7309,38 +7770,21 @@ var $author$project$Main$viewProfile = F2(
 				_List_Nil,
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$td,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$input,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$value(
-										$elm$core$String$fromInt(profile.movement)),
-										$elm$html$Html$Events$onInput(
-										A2(
-											$author$project$Main$intEdit,
-											idx,
-											A2($elm$core$Basics$composeL, $author$project$Lenses$unitProfile, $author$project$Lenses$movement)))
-									]),
-								_List_Nil)
-							])),
-						body(profile.weaponSkill),
-						body(profile.ballisticSkill),
-						body(profile.strength),
-						body(profile.toughness),
-						body(profile.wounds),
-						body(profile.initiative),
-						body(profile.attacks),
-						body(profile.leadership)
+						A2(cell, profile.movement, $author$project$Lenses$profileMovement),
+						A2(cell, profile.weaponSkill, $author$project$Lenses$profileWeaponSkill),
+						A2(cell, profile.ballisticSkill, $author$project$Lenses$profileBallisticSkill),
+						A2(cell, profile.strength, $author$project$Lenses$profileStrength),
+						A2(cell, profile.toughness, $author$project$Lenses$profileToughness),
+						A2(cell, profile.wounds, $author$project$Lenses$profileWounds),
+						A2(cell, profile.initiative, $author$project$Lenses$profileInitiative),
+						A2(cell, profile.attacks, $author$project$Lenses$profileAttacks),
+						A2(cell, profile.leadership, $author$project$Lenses$profileLeadership)
 					]))
 			]);
 	});
 var $author$project$Main$viewAndEditUnit = F2(
 	function (idx, unit) {
+		var width = 9;
 		var xpRow = A2(
 			$elm$html$Html$tr,
 			_List_Nil,
@@ -7350,12 +7794,14 @@ var $author$project$Main$viewAndEditUnit = F2(
 					$elm$html$Html$td,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$colspan(9)
+							$elm$html$Html$Attributes$colspan(width)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(
-							'Experience (XP): ' + $elm$core$String$fromInt(unit.xp))
+							A2(
+							$author$project$Main$headerCell,
+							'Experience (XP)',
+							A3($author$project$Main$intInput, unit.xp, idx, $author$project$Lenses$unitXp))
 						]))
 				]));
 		var profileRows = A2($author$project$Main$viewProfile, idx, unit.profile);
@@ -7368,11 +7814,14 @@ var $author$project$Main$viewAndEditUnit = F2(
 					$elm$html$Html$td,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$colspan(9)
+							$elm$html$Html$Attributes$colspan(width)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Name: ' + unit.name)
+							A2(
+							$author$project$Main$headerCell,
+							'Name',
+							A3($author$project$Main$stringInput, unit.name, idx, $author$project$Lenses$unitName))
 						]))
 				]));
 		var countRow = A2(
@@ -7384,12 +7833,14 @@ var $author$project$Main$viewAndEditUnit = F2(
 					$elm$html$Html$td,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$colspan(9)
+							$elm$html$Html$Attributes$colspan(width)
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(
-							'Num. models: ' + $elm$core$String$fromInt(unit.count))
+							A2(
+							$author$project$Main$headerCell,
+							'Models',
+							A3($author$project$Main$intInput, unit.count, idx, $author$project$Lenses$unitCount))
 						]))
 				]));
 		var rows = _Utils_ap(
@@ -7407,6 +7858,76 @@ var $author$project$Main$viewAndEditUnit = F2(
 					A2($elm$html$Html$tbody, _List_Nil, rows)
 				]));
 	});
+var $author$project$Main$EditWarband = function (a) {
+	return {$: 'EditWarband', a: a};
+};
+var $author$project$Main$warbandIntEdit = F2(
+	function (accessor, string) {
+		var _v0 = $elm$core$String$toInt(string);
+		if (_v0.$ === 'Just') {
+			var value = _v0.a;
+			return $author$project$Main$EditWarband(
+				A2($bChiquet$elm_accessors$Accessors$set, accessor, value));
+		} else {
+			return A2($elm$core$Debug$log, 'invalid input, not an integer', $author$project$Main$Noop);
+		}
+	});
+var $author$project$Main$warbandIntInput = F2(
+	function (initialValue, accessor) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$value(
+					$elm$core$String$fromInt(initialValue)),
+					$elm$html$Html$Events$onInput(
+					$author$project$Main$warbandIntEdit(accessor))
+				]),
+			_List_Nil);
+	});
+var $author$project$Lenses$warbandName = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.name;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					name: change(record.name)
+				});
+		}));
+var $author$project$Main$warbandStringEdit = F2(
+	function (accessor, value) {
+		return $author$project$Main$EditWarband(
+			A2($bChiquet$elm_accessors$Accessors$set, accessor, value));
+	});
+var $author$project$Main$warbandStringInput = F2(
+	function (initialValue, accessor) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$value(initialValue),
+					$elm$html$Html$Events$onInput(
+					$author$project$Main$warbandStringEdit(accessor))
+				]),
+			_List_Nil);
+	});
+var $author$project$Lenses$warbandTreasury = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.treasury;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					treasury: change(record.treasury)
+				});
+		}));
 var $author$project$Main$viewAndEditWarband = function (warband) {
 	return _Utils_ap(
 		_List_fromArray(
@@ -7416,23 +7937,43 @@ var $author$project$Main$viewAndEditWarband = function (warband) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Name: ' + warband.name)
+						A2(
+						$author$project$Main$headerCell,
+						'Name',
+						A2($author$project$Main$warbandStringInput, warband.name, $author$project$Lenses$warbandName))
 					])),
 				A2(
 				$elm$html$Html$p,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						'Gold: ' + $elm$core$String$fromInt(warband.treasury.gold))
+						A2(
+						$author$project$Main$headerCell,
+						'Gold',
+						A2(
+							$author$project$Main$warbandIntInput,
+							warband.treasury.gold,
+							A2($elm$core$Basics$composeL, $author$project$Lenses$warbandTreasury, $author$project$Lenses$treasuryGold)))
 					])),
 				A2(
 				$elm$html$Html$p,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						'Wyrdstone: ' + $elm$core$String$fromInt(warband.treasury.wyrdstone))
+						A2(
+						$author$project$Main$headerCell,
+						'Wyrdstone',
+						A2(
+							$author$project$Main$warbandIntInput,
+							warband.treasury.wyrdstone,
+							A2($elm$core$Basics$composeL, $author$project$Lenses$warbandTreasury, $author$project$Lenses$treasuryWyrdstone)))
+					])),
+				A2(
+				$elm$html$Html$h3,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Units')
 					]))
 			]),
 		A2($elm$core$List$indexedMap, $author$project$Main$viewAndEditUnit, warband.units));
@@ -7482,7 +8023,21 @@ var $author$project$Main$viewWarband = function (model) {
 					var _v0 = model.warband;
 					if (_v0.$ === 'Just') {
 						var w = _v0.a;
-						return $author$project$Main$viewAndEditWarband(w);
+						return _Utils_ap(
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$Main$DownloadWarband)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Download Warband')
+										]))
+								]),
+							$author$project$Main$viewAndEditWarband(w));
 					} else {
 						return _List_Nil;
 					}
