@@ -7477,7 +7477,16 @@ var $author$project$Main$EditWarband = function (a) {
 	return {$: 'EditWarband', a: a};
 };
 var $author$project$Warband$defaultProfile = {attacks: 0, ballisticSkill: 0, initiative: 0, kind: $author$project$Warband$Hero, leadership: 0, movement: 0, name: '<insert profile name>', specialRules: $elm$core$Maybe$Nothing, strength: 0, toughness: 0, weaponSkill: 0, wounds: 0};
-var $author$project$Warband$defaultUnit = {count: 1, equipment: _List_Nil, name: '<insert character name>', profile: $author$project$Warband$defaultProfile, xp: 0};
+var $author$project$Warband$defaultUnit = {
+	count: 1,
+	equipment: _List_fromArray(
+		[
+			$author$project$Warband$EquipmentWeapon($author$project$Warband$defaultWeapon)
+		]),
+	name: '<insert character name>',
+	profile: $author$project$Warband$defaultProfile,
+	xp: 0
+};
 var $author$project$Main$addUnitButton = function () {
 	var addUnitMsg = $author$project$Main$EditWarband(
 		function (warband) {
@@ -7560,6 +7569,36 @@ var $author$project$Lenses$treasuryWyrdstone = A2(
 					wyrdstone: change(record.wyrdstone)
 				});
 		}));
+var $author$project$Main$EditUnit = F2(
+	function (a, b) {
+		return {$: 'EditUnit', a: a, b: b};
+	});
+var $author$project$Main$addEquipmentButton = function (idx) {
+	var newEquipment = $author$project$Warband$EquipmentWeapon($author$project$Warband$defaultWeapon);
+	var addEquipmentMsg = A2(
+		$author$project$Main$EditUnit,
+		idx,
+		function (unit) {
+			return _Utils_update(
+				unit,
+				{
+					equipment: _Utils_ap(
+						unit.equipment,
+						_List_fromArray(
+							[newEquipment]))
+				});
+		});
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Events$onClick(addEquipmentMsg)
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text('Add Equipment')
+			]));
+};
 var $elm$html$Html$Attributes$colspan = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -7568,10 +7607,6 @@ var $elm$html$Html$Attributes$colspan = function (n) {
 };
 var $elm$html$Html$h4 = _VirtualDom_node('h4');
 var $elm$html$Html$h5 = _VirtualDom_node('h5');
-var $author$project$Main$EditUnit = F2(
-	function (a, b) {
-		return {$: 'EditUnit', a: a, b: b};
-	});
 var $bChiquet$elm_accessors$Accessors$Internal$id = $bChiquet$elm_accessors$Accessors$Internal$Relation(
 	{
 		get: function (a) {
@@ -8270,7 +8305,7 @@ var $author$project$Main$viewAndEditEquipment = F2(
 								A2($bChiquet$elm_accessors$Accessors$get, $author$project$Lenses$modifierValue, weapon.rend),
 								A2(
 									$elm$core$Basics$composeL,
-									A2($elm$core$Basics$composeL, $author$project$Lenses$equipmentWeapon, $author$project$Lenses$weaponStrength),
+									A2($elm$core$Basics$composeL, $author$project$Lenses$equipmentWeapon, $author$project$Lenses$weaponRend),
 									$author$project$Lenses$modifierValue))
 							]))
 					]))
@@ -8397,6 +8432,22 @@ var $author$project$Main$viewAndEditUnit = F2(
 										[
 											$elm$html$Html$text(unit.name + '\'s Equipment')
 										]))
+								]))
+						])),
+					A2(
+					$elm$html$Html$tr,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$td,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$colspan(2)
+								]),
+							_List_fromArray(
+								[
+									$author$project$Main$addEquipmentButton(idx)
 								]))
 						]))
 				]),
