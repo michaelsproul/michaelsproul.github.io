@@ -7680,6 +7680,19 @@ var $author$project$Lenses$profileKind = A2(
 					kind: change(record.kind)
 				});
 		}));
+var $author$project$Lenses$profileName = A2(
+	$bChiquet$elm_accessors$Accessors$makeOneToOne,
+	function ($) {
+		return $.name;
+	},
+	F2(
+		function (change, record) {
+			return _Utils_update(
+				record,
+				{
+					name: change(record.name)
+				});
+		}));
 var $author$project$Main$genericStringEdit = F3(
 	function (event, accessor, value) {
 		return event(
@@ -8345,6 +8358,29 @@ var $author$project$Main$viewAndEditUnit = F2(
 						]))
 				]));
 		var profileRows = A2($author$project$Main$viewProfileStatBlock, idx, unit.profile);
+		var profileNameRow = A2(
+			$elm$html$Html$tr,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$td,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$colspan(width)
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$author$project$Main$headerCell,
+							'Profile',
+							A3(
+								$author$project$Main$stringInput,
+								unit.profile.name,
+								idx,
+								A2($elm$core$Basics$composeL, $author$project$Lenses$unitProfile, $author$project$Lenses$profileName)))
+						]))
+				]));
 		var nameRow = A2(
 			$elm$html$Html$tr,
 			_List_Nil,
@@ -8478,7 +8514,7 @@ var $author$project$Main$viewAndEditUnit = F2(
 				]));
 		var rows = _Utils_ap(
 			_List_fromArray(
-				[headerRow, nameRow, kindRow, countRow, xpRow]),
+				[headerRow, nameRow, profileNameRow, kindRow, countRow, xpRow]),
 			_Utils_ap(profileRows, equipmentRows));
 		return A2(
 			$elm$html$Html$table,
